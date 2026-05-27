@@ -1,0 +1,788 @@
+:root {
+  --bg-color: #0b0d16;
+  --panel-bg: rgba(20, 24, 45, 0.6);
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  
+  /* Coral/Red Neon for X */
+  --x-color: #ff4757;
+  --x-glow: 0 0 15px rgba(255, 71, 87, 0.6);
+  --x-gradient: linear-gradient(135deg, #ff6b81, #ff4757);
+  
+  /* Cyan/Blue Neon for O */
+  --o-color: #00d2d3;
+  --o-glow: 0 0 15px rgba(0, 210, 211, 0.6);
+  --o-gradient: linear-gradient(135deg, #48dbfb, #00d2d3);
+  
+  /* Neutral accents */
+  --accent-color: #5f27cd;
+  --accent-glow: 0 0 20px rgba(95, 39, 205, 0.5);
+  --board-bg: #101223;
+  --cell-bg: #161930;
+  --cell-hover: #1e2246;
+  
+  --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Hiệu ứng nền Mesh Gradient tĩnh (Đã tắt chuyển động động để sửa lag render) */
+.bg-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  z-index: 0;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.bg-glow-1 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, var(--accent-color) 0%, transparent 70%);
+  top: -10%;
+  left: -10%;
+}
+
+.bg-glow-2 {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, #222f3e 0%, transparent 70%);
+  bottom: -15%;
+  right: -10%;
+}
+/* Glassmorphism Panel base */
+.glass-panel {
+  background: var(--panel-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+#app {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  z-index: 1;
+}
+
+/* Header */
+.game-header {
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.game-title {
+  font-size: min(3.5vh, 28px);
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-shadow: 0 4px 15px rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.icon-game {
+  background: linear-gradient(135deg, var(--x-color), var(--o-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 8px rgba(95, 39, 205, 0.4));
+}
+
+.neon-text {
+  color: var(--o-color);
+  text-shadow: var(--o-glow);
+}
+
+/* Game Container */
+.game-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Status Bar */
+.status-bar {
+  width: 100%;
+  max-width: 650px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.player-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 1px solid transparent;
+  flex: 1;
+}
+
+/* Trạng thái hoạt động của thẻ */
+.player-card.active {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.player-card.active#playerCard {
+  box-shadow: 0 0 15px rgba(255, 71, 87, 0.15);
+  border-color: rgba(255, 71, 87, 0.3);
+}
+
+.player-card.active#aiCard {
+  box-shadow: 0 0 15px rgba(0, 210, 211, 0.15);
+  border-color: rgba(0, 210, 211, 0.3);
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.player-card.active .avatar {
+  transform: scale(1.1);
+}
+
+.player-avatar i {
+  color: var(--x-color);
+}
+
+.ai-avatar i {
+  color: var(--o-color);
+}
+
+.player-details {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.player-label {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.player-role {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 1px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.player-card.active .player-role {
+  opacity: 1;
+  animation: pulseOpacity 1.5s infinite alternate;
+}
+
+@keyframes pulseOpacity {
+  0% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.symbol-badge {
+  font-size: 16px;
+  font-weight: 800;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+.symbol-badge.X {
+  color: var(--x-color);
+  text-shadow: var(--x-glow);
+  background: rgba(255, 71, 87, 0.1);
+  border: 1px solid rgba(255, 71, 87, 0.2);
+}
+
+.symbol-badge.O {
+  color: var(--o-color);
+  text-shadow: var(--o-glow);
+  background: rgba(0, 210, 211, 0.1);
+  border: 1px solid rgba(0, 210, 211, 0.2);
+}
+
+.timer {
+  font-size: 16px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  min-width: 50px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.player-card.active .timer {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.timer.warning {
+  color: #ff9f43;
+  animation: pulseTimer 0.8s infinite;
+  border-color: rgba(255, 159, 67, 0.3) !important;
+  box-shadow: 0 0 10px rgba(255, 159, 67, 0.2);
+}
+
+.timer.danger {
+  color: #ff4757;
+  animation: pulseTimer 0.4s infinite;
+  border-color: rgba(255, 71, 87, 0.4) !important;
+  box-shadow: 0 0 12px rgba(255, 71, 87, 0.3);
+}
+
+@keyframes pulseTimer {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.vs-badge {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--panel-border);
+  padding: 4px 8px;
+  border-radius: 20px;
+  margin: 0 15px;
+}
+
+/* Thanh Progress Bar đếm ngược */
+.progress-bar-container {
+  width: 100%;
+  max-width: 650px;
+  height: 6px;
+  overflow: hidden;
+  padding: 0;
+  border-radius: 10px;
+  border: none;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #2ed573, #ff9f43, #ff4757);
+  background-size: 300% 100%;
+  transition: width 1s linear, background-position 0.5s ease;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(46, 213, 115, 0.3);
+}
+
+/* Điều khiển (Undo, Play Again) */
+.controls {
+  width: 100%;
+  max-width: 650px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  padding: 10px;
+}
+
+.control-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--panel-border);
+  color: var(--text-primary);
+  padding: 10px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.control-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.control-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.control-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+#playAgain {
+  background: linear-gradient(135deg, var(--accent-color), #4a00e0);
+  border-color: rgba(95, 39, 205, 0.3);
+  box-shadow: var(--accent-glow);
+}
+
+#playAgain:hover {
+  background: linear-gradient(135deg, #702ef0, #5509f5);
+  box-shadow: 0 0 25px rgba(95, 39, 205, 0.7);
+}
+
+/* Lớp phủ Setup Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(5, 6, 12, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.4s ease;
+}
+
+.modal-content {
+  width: 90%;
+  max-width: 440px;
+  padding: 30px;
+  text-align: center;
+  animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes modalPop {
+  from {
+    transform: scale(0.9) translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-content h2 {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.modal-content h2 i {
+  color: var(--o-color);
+}
+
+.modal-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 25px;
+}
+
+.side-buttons,
+.turn-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.select-btn {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--panel-border);
+  padding: 15px 20px;
+  border-radius: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  text-align: left;
+  transition: all 0.3s ease;
+}
+
+.symbol-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  transition: all 0.3s ease;
+}
+
+.select-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.btn-title {
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.btn-desc {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+/* Hover effects for selection buttons */
+.select-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.choose-x:hover {
+  box-shadow: 0 0 20px rgba(255, 71, 87, 0.15);
+  border-color: rgba(255, 71, 87, 0.4);
+}
+.choose-x:hover .symbol-circle {
+  color: var(--x-color);
+  background: rgba(255, 71, 87, 0.15);
+  text-shadow: var(--x-glow);
+}
+
+.choose-o:hover {
+  box-shadow: 0 0 20px rgba(0, 210, 211, 0.15);
+  border-color: rgba(0, 210, 211, 0.4);
+}
+.choose-o:hover .symbol-circle {
+  color: var(--o-color);
+  background: rgba(0, 210, 211, 0.15);
+  text-shadow: var(--o-glow);
+}
+
+.choose-first:hover {
+  box-shadow: 0 0 20px rgba(255, 159, 67, 0.15);
+  border-color: rgba(255, 159, 67, 0.4);
+}
+.choose-first:hover .symbol-circle {
+  color: #ff9f43;
+  background: rgba(255, 159, 67, 0.15);
+  text-shadow: 0 0 8px rgba(255, 159, 67, 0.6);
+}
+
+.choose-second:hover {
+  box-shadow: 0 0 20px rgba(0, 210, 211, 0.15);
+  border-color: rgba(0, 210, 211, 0.4);
+}
+.choose-second:hover .symbol-circle {
+  color: var(--o-color);
+  background: rgba(0, 210, 211, 0.15);
+  text-shadow: var(--o-glow);
+}
+
+/* Thông báo nổi (Toast/Overlay message) */
+#message {
+  position: fixed;
+  top: 25px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50px);
+  padding: 12px 30px;
+  border-radius: 30px;
+  font-size: 15px;
+  font-weight: 700;
+  z-index: 200;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+#message.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+#message.win {
+  background: rgba(46, 213, 115, 0.2);
+  border: 1px solid rgba(46, 213, 115, 0.4);
+  color: #2ed573;
+  text-shadow: 0 0 10px rgba(46, 213, 115, 0.4);
+}
+
+#message.lose {
+  background: rgba(255, 71, 87, 0.2);
+  border: 1px solid rgba(255, 71, 87, 0.4);
+  color: #ff4757;
+  text-shadow: 0 0 10px rgba(255, 71, 87, 0.4);
+}
+
+#message.warning {
+  background: rgba(255, 159, 67, 0.2);
+  border: 1px solid rgba(255, 159, 67, 0.4);
+  color: #ff9f43;
+  text-shadow: 0 0 10px rgba(255, 159, 67, 0.4);
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #app {
+    padding: 10px;
+  }
+  
+  .status-bar {
+    padding: 10px 15px;
+  }
+  
+  .player-card {
+    gap: 8px;
+    padding: 4px 8px;
+  }
+  
+  .avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 15px;
+  }
+  
+  .player-label {
+    font-size: 12px;
+  }
+  
+  .timer {
+    font-size: 14px;
+    padding: 2px 6px;
+    min-width: 42px;
+  }
+  
+  .symbol-badge {
+    width: 20px;
+    height: 20px;
+    font-size: 13px;
+  }
+  
+  .modal-content {
+    padding: 20px;
+  }
+  
+  .modal-content h2 {
+    font-size: 18px;
+  }
+  
+  .select-btn {
+    padding: 12px 15px;
+  }
+  
+  .symbol-circle {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+}
+/* Layout Bàn cờ */
+.main-layout {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.board-wrapper {
+  position: relative;
+  border-radius: 16px;
+  padding: 6px;
+  background: linear-gradient(135deg, rgba(95, 39, 205, 0.2), rgba(0, 210, 211, 0.15));
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+}
+
+#board {
+  display: grid;
+  grid-template-columns: repeat(30, 1fr);
+  grid-template-rows: repeat(30, 1fr);
+  gap: 1px;
+  background-color: var(--board-bg);
+  
+  /* Khóa cứng tỷ lệ 1:1, không bị co bóp chiều cao */
+  width: min(76vh, 90vw);
+  height: min(76vh, 90vw);
+  max-width: 620px;
+  max-height: 620px;
+  aspect-ratio: 1 / 1;
+  
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 1px;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
+}
+
+.cell {
+  background-color: var(--cell-bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  aspect-ratio: 1 / 1;
+  position: relative;
+  touch-action: manipulation;
+}
+
+.cell:hover {
+  background-color: var(--cell-hover);
+  z-index: 1;
+}
+
+/* Hiệu ứng xem trước quân cờ khi hover (Click 1 lần đánh ô cờ) */
+#board.preview-mode-x .cell:not(.X):not(.O):hover::before {
+  content: "✕";
+  font-family: system-ui, sans-serif;
+  font-size: min(1.8vh, 14px);
+  font-weight: 800;
+  color: var(--x-color);
+  opacity: 0.35;
+  animation: previewPulse 1s infinite alternate;
+}
+
+#board.preview-mode-o .cell:not(.X):not(.O):hover::before {
+  content: "◯";
+  font-family: system-ui, sans-serif;
+  font-size: min(1.8vh, 14px);
+  font-weight: 800;
+  color: var(--o-color);
+  opacity: 0.35;
+  animation: previewPulse 1s infinite alternate;
+}
+
+@keyframes previewPulse {
+  0% { opacity: 0.25; transform: scale(0.9); }
+  100% { opacity: 0.45; transform: scale(1.05); }
+}
+
+/* Trạng thái thật của ô cờ */
+.cell.X::before {
+  content: "✕";
+  font-family: system-ui, sans-serif;
+  font-size: min(2vh, 16px);
+  font-weight: 900;
+  color: var(--x-color);
+  text-shadow: var(--x-glow);
+  animation: piecePopIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.cell.O::before {
+  content: "◯";
+  font-family: system-ui, sans-serif;
+  font-size: min(2vh, 16px);
+  font-weight: 900;
+  color: var(--o-color);
+  text-shadow: var(--o-glow);
+  animation: piecePopIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes piecePopIn {
+  0% {
+    transform: scale(0) rotate(-45deg);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+
+/* Đánh dấu nước đi cuối cùng */
+.cell.last-move {
+  background-color: rgba(255, 255, 255, 0.03);
+  box-shadow: inset 0 0 0 1px rgba(255, 215, 0, 0.4);
+  z-index: 1;
+}
+
+.cell.last-move::after {
+  content: "";
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background-color: #ffd700;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #ffd700;
+  top: 3px;
+  right: 3px;
+  animation: blinkPoint 1s infinite alternate;
+}
+
+@keyframes blinkPoint {
+  0% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #board {
+    width: 92vw;
+    height: 92vw;
+  }
+  
+  .cell::before {
+    font-size: min(1.6vh, 12px) !important;
+  }
+  
+  #board.preview-mode-x .cell:not(.X):not(.O):hover::before,
+  #board.preview-mode-o .cell:not(.X):not(.O):hover::before {
+    font-size: min(1.4vh, 10px) !important;
+  }
+}

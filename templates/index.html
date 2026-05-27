@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Caro AI - Trải nghiệm đỉnh cao</title>
+    <!-- CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/base.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/components.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/board.css') }}"
+    />
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Background hiệu ứng mờ ảo diệu -->
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <div id="app">
+      <!-- Header -->
+      <header class="game-header">
+        <h1 class="game-title">
+          <i class="fas fa-gamepad icon-game"></i> CARO <span class="neon-text">AI</span>
+        </h1>
+      </header>
+
+      <!-- Game Container -->
+      <div class="game-container">
+        <!-- Status Bar (Gom thông tin thời gian & lượt đi) -->
+        <div class="status-bar glass-panel">
+          <!-- Người chơi -->
+          <div id="playerCard" class="player-card">
+            <div class="avatar player-avatar">
+              <i class="fas fa-user-astronaut"></i>
+            </div>
+            <div class="player-details">
+              <span class="player-label">Người chơi</span>
+              <span class="player-role" id="turnStatusLeft">Đến lượt</span>
+            </div>
+            <div class="symbol-badge X" id="playerBadge">X</div>
+            <div class="timer" id="timerLeft">20s</div>
+          </div>
+
+          <!-- Divider VS -->
+          <div class="vs-badge">VS</div>
+
+          <!-- AI Bot -->
+          <div id="aiCard" class="player-card">
+            <div class="timer" id="timerRight">20s</div>
+            <div class="symbol-badge O" id="aiBadge">O</div>
+            <div class="player-details">
+              <span class="player-label">AI Bot</span>
+              <span class="player-role" id="turnStatusRight">Đến lượt</span>
+            </div>
+            <div class="avatar ai-avatar">
+              <i class="fas fa-robot"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bộ đếm ngược dạng thanh chạy (Progress Bar) -->
+        <div class="progress-bar-container glass-panel">
+          <div id="gameProgressBar" class="progress-bar"></div>
+        </div>
+
+        <!-- Layout chính của bàn cờ -->
+        <div class="main-layout">
+          <div class="board-wrapper">
+            <div id="board"></div>
+          </div>
+        </div>
+
+        <!-- Controls: Hoàn tác & Chơi lại -->
+        <div class="controls glass-panel">
+          <button id="undo" class="control-btn" disabled>
+            <i class="fas fa-undo"></i>
+            <span>Lùi một bước</span>
+          </button>
+          <button id="playAgain" class="control-btn hidden">
+            <i class="fas fa-redo"></i>
+            <span>Chơi lại</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modals cho thiết lập ban đầu (Phe cờ & Lượt đi) -->
+    <div id="setupOverlay" class="modal-overlay">
+      <!-- Chọn Phe -->
+      <div id="sideSelection" class="modal-content glass-panel">
+        <h2><i class="fas fa-users-cog"></i> Chọn phe của bạn</h2>
+        <p class="modal-subtitle">Hãy chọn màu sắc đại diện cho quân cờ của bạn</p>
+        <div class="side-buttons">
+          <button id="chooseX" class="select-btn choose-x">
+            <div class="symbol-circle"><i class="fas fa-xmark"></i></div>
+            <div class="select-info">
+              <span class="btn-title">Quân X</span>
+              <span class="btn-desc">Màu đỏ san hô rực rỡ</span>
+            </div>
+          </button>
+          <button id="chooseO" class="select-btn choose-o">
+            <div class="symbol-circle"><i class="fas fa-circle-notch"></i></div>
+            <div class="select-info">
+              <span class="btn-title">Quân O</span>
+              <span class="btn-desc">Màu xanh Neon mát lạnh</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Chọn Lượt -->
+      <div id="turnSelection" class="modal-content glass-panel hidden">
+        <h2><i class="fas fa-hourglass-start"></i> Chọn lượt đi</h2>
+        <p class="modal-subtitle">Quyết định ai là người khai cuộc trận đấu</p>
+        <div class="turn-buttons">
+          <button id="chooseFirst" class="select-btn choose-first">
+            <div class="symbol-circle"><i class="fas fa-bolt"></i></div>
+            <div class="select-info">
+              <span class="btn-title">Đi trước</span>
+              <span class="btn-desc">Tận dụng lợi thế tấn công</span>
+            </div>
+          </button>
+          <button id="chooseSecond" class="select-btn choose-second">
+            <div class="symbol-circle"><i class="fas fa-shield-halved"></i></div>
+            <div class="select-info">
+              <span class="btn-title">Đi sau</span>
+              <span class="btn-desc">Phòng ngự phản công sắc bén</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Thông báo kết thúc hoặc cảnh báo -->
+    <div id="message" class="hidden"></div>
+
+    <!-- Game Scripts -->
+    <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+  </body>
+</html>

@@ -1,0 +1,74 @@
+:root {
+  --bg-color: #0b0d16;
+  --panel-bg: rgba(20, 24, 45, 0.6);
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  
+  /* Coral/Red Neon for X */
+  --x-color: #ff4757;
+  --x-glow: 0 0 15px rgba(255, 71, 87, 0.6);
+  --x-gradient: linear-gradient(135deg, #ff6b81, #ff4757);
+  
+  /* Cyan/Blue Neon for O */
+  --o-color: #00d2d3;
+  --o-glow: 0 0 15px rgba(0, 210, 211, 0.6);
+  --o-gradient: linear-gradient(135deg, #48dbfb, #00d2d3);
+  
+  /* Neutral accents */
+  --accent-color: #5f27cd;
+  --accent-glow: 0 0 20px rgba(95, 39, 205, 0.5);
+  --board-bg: #101223;
+  --cell-bg: #161930;
+  --cell-hover: #1e2246;
+  
+  --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Hiệu ứng nền Mesh Gradient tĩnh (Đã tắt chuyển động động để sửa lag render) */
+.bg-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  z-index: 0;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.bg-glow-1 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, var(--accent-color) 0%, transparent 70%);
+  top: -10%;
+  left: -10%;
+}
+
+.bg-glow-2 {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, #222f3e 0%, transparent 70%);
+  bottom: -15%;
+  right: -10%;
+}
