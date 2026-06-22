@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 
 const Board = memo(function Board({ board, onCellClick, playerSymbol, playerTurn, gameOver, lastMove }) {
   const isInteractive = playerTurn && !gameOver;
-  const previewClass = isInteractive ? (playerSymbol === "X" ? "preview-mode-x" : "preview-mode-o") : "";
+  const previewClass = isInteractive && playerSymbol === "X" ? "preview-mode-x" : "";
 
   return (
     <div className="main-layout">

@@ -1,58 +1,64 @@
-1. Mở Command Prompt
-Nhấn Win + R, gõ cmd rồi nhấn Enter, hoặc
+# Caro AI - Cấu trúc dự án mới
 
-Nhấn Start, gõ “Command Prompt” và chọn ứng dụng.
+Dự án Caro AI đã được chia thành hai phần riêng biệt:
+1. **Backend (API)**: Nằm trong thư mục `caro-bot` (Python & Flask).
+2. **Frontend (React + Vite)**: Nằm trong thư mục `frontend` (React).
 
-2. Chuyển đến thư mục dự án
-Giả sử bạn đã lưu dự án ở đường dẫn:
-C:\Users\PC\Project\caro-ai
-Trong cửa sổ CMD, gõ:
-cd C:\Users\PC\Project\caro-ai
-Rồi nhấn Enter để vào thư mục.
+---
 
-3. Tạo và kích hoạt môi trường ảo
-Việc dùng môi trường ảo (virtual environment) giúp tách biệt các gói Python:
+## 1. Hướng dẫn chạy Backend (API)
 
-Tạo môi trường ảo:
+Backend chạy bằng Python Flask để xử lý các nước đi của AI.
 
-python -m venv venv
-(Nếu lệnh python không chạy, thử py -3 -m venv venv)
+### Bước 1: Mở Terminal/Command Prompt
+Di chuyển vào thư mục backend:
+```bash
+cd caro-bot
+```
 
-Kích hoạt môi trường:
+### Bước 2: Kích hoạt môi trường ảo (venv)
+Môi trường ảo Python (`venv`) đã được chuyển vào trong thư mục `caro-bot`. Hãy kích hoạt nó:
 
-venv\Scripts\activate
-Sau khi activate, bạn sẽ thấy tiền tố (venv) xuất hiện trước dấu nhắc lệnh.
+* **Trên Windows (CMD):**
+  ```cmd
+  venv\Scripts\activate
+  ```
+* **Trên Windows (PowerShell):**
+  ```powershell
+  .\venv\Scripts\Activate.ps1
+  ```
+* **Trên macOS / Linux:**
+  ```bash
+  source venv/bin/activate
+  ```
 
-4. Cài đặt Flask
-Với môi trường ảo đang kích hoạt, cài Flask bằng pip:
-
-pip install Flask
-Bạn sẽ thấy pip tải và cài đặt Flask cùng các phụ thuộc.
-
-5. Chạy ứng dụng
-Trong thư mục gốc (vẫn đang có (venv) trước dấu nhắc):
-
+### Bước 3: Khởi chạy Flask Server
+Sau khi môi trường ảo được kích hoạt, khởi động server API:
+```bash
 python app.py
-Hoặc nếu dùng launcher:
+```
+Server backend sẽ chạy tại địa chỉ: `http://127.0.0.1:5000`
 
-py app.py
-Nếu thành công, CMD sẽ hiển thị tương tự:
+---
 
- * Serving Flask app "app.py"
- * Debug mode: on
- * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-6. Mở trò chơi trong trình duyệt
-Mở Chrome/Edge/Firefox và truy cập:
+## 2. Hướng dẫn chạy Frontend (React + Vite)
 
-http://127.0.0.1:5000
-Giao diện Caro sẽ hiện ra, bạn chỉ việc chọn phe và bắt đầu chơi.
+Frontend sử dụng React và kết nối với Backend thông qua cấu hình Proxy của Vite.
 
-7. Kết thúc ứng dụng
-Khi muốn dừng server, quay lại cửa sổ CMD và nhấn Ctrl +C.
+### Bước 1: Mở một cửa sổ Terminal mới
+Di chuyển vào thư mục frontend:
+```bash
+cd frontend
+```
 
-Lưu ý thêm
-Mỗi khi mở lại CMD, bạn cần kích hoạt lại môi trường ảo (venv\Scripts\activate) trước khi chạy python app.py.
+### Bước 2: Cài đặt các thư viện Node.js (nếu chạy lần đầu)
+```bash
+npm install
+```
 
-Nếu muốn “dọn” môi trường, gõ deactivate để tắt venv.
+### Bước 3: Khởi chạy Frontend ở chế độ Develop
+```bash
+npm run dev
+```
 
-Chúc bạn thành công!
+Vite sẽ hiển thị địa chỉ truy cập (thường là `http://localhost:5173` hoặc `http://localhost:5174`). Hãy click vào liên kết đó để mở game trong trình duyệt và bắt đầu chơi!

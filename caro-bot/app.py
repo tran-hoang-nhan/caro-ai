@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return jsonify({"status": "ok", "message": "Caro Bot API is running"})
 
 @app.route('/move', methods=['POST'])
 def move():
